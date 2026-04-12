@@ -1,0 +1,6 @@
+name: helpcentrix
+services:
+  web:
+    project: ./helpcentrix
+    language: js
+    host: appservice
