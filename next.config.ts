@@ -7,6 +7,9 @@ const nextConfig = {
       },
     ],
   },
+  env: {
+    NEXT_PUBLIC_QUESTION_API: "https://helpcentrix-backend-production.up.railway.app/api/questions",
+  },
 };
 
 export default nextConfig;

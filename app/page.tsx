@@ -4,13 +4,19 @@ import Image from "next/image";
 import Navbar from "../components/Navbar";
 import { useState, useEffect } from "react";
 
+const BACKEND_URL = process.env.NEXT_PUBLIC_QUESTION_API ||
+  "https://helpcentrix-backend-production.up.railway.app/api/questions";
+
 export default function Home() {
   // 🔥 STATE
-  const [pendingMessage, setPendingMessage] = useState("");
   const [question, setQuestion] = useState("");
   const [chatOpen, setChatOpen] = useState(false);
   const [messages, setMessages] = useState<any[]>([]);
   const [input, setInput] = useState("");
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [category, setCategory] = useState("General");
 
   // 🔥 SEND MESSAGE
   const sendMessage = async (msg: string) => {
@@ -20,9 +26,7 @@ export default function Home() {
     setMessages((prev) => [...prev, userMsg]);
 
     try {
-      const res = await fetch(
-        "https://helpcentrix-backend-production.up.railway.app/api/questions",
-        {
+      const res = await fetch(BACKEND_URL, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -30,10 +34,10 @@ export default function Home() {
           body: JSON.stringify({
             question: msg,
             customer_id: "123e4567-e89b-12d3-a456-426614174000",
-            name: "User",
-            email: "user@example.com",
-            phone: "1234567890",
-            issue_category: "General",
+            name: name || "User",
+            email: email || "user@example.com",
+            phone: phone || "1234567890",
+            issue_category: category,
           }),
         }
       );
@@ -59,18 +63,12 @@ export default function Home() {
   // 🔥 HANDLE CHAT
 
   const handleChat = () => {
-  if (!question.trim()) return;
+    if (!question.trim()) return;
 
-  setPendingMessage(question);   // store message
-  setChatOpen(true);             // open modal
-  setQuestion("");               // clear input
-};
-useEffect(() => {
-  if (chatOpen && pendingMessage) {
-    sendMessage(pendingMessage);
-    setPendingMessage("");
-  }
-}, [chatOpen]);
+    setInput(question);
+    setChatOpen(true);
+    setQuestion("");
+  };
 
   return (
     <main className="bg-gray-50 min-h-screen">
@@ -229,6 +227,48 @@ useEffect(() => {
               <button onClick={() => setChatOpen(false)}>✖</button>
             </div>
 
+            {/* USER INFO FIELDS */}
+            <div className="bg-white p-4 border-b space-y-4">
+              <div className="grid gap-3 md:grid-cols-2">
+                <input
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="w-full border px-3 py-2 rounded"
+                  placeholder="Your name"
+                />
+                <input
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full border px-3 py-2 rounded"
+                  placeholder="Your email"
+                  type="email"
+                />
+                <input
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  className="w-full border px-3 py-2 rounded"
+                  placeholder="Phone number"
+                />
+                <select
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                  className="w-full border px-3 py-2 rounded"
+                >
+                  <option value="General">General</option>
+                  <option value="Computer Tech">Computer Tech</option>
+                  <option value="Automobile">Automobile</option>
+                  <option value="Home Appliances">Home Appliances</option>
+                </select>
+              </div>
+
+              <textarea
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder="Describe your problem here..."
+                className="w-full border px-3 py-2 rounded min-h-[110px] resize-none"
+              />
+            </div>
+
             {/* MESSAGES */}
             <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-100">
               {messages.map((msg, i) => (
@@ -245,20 +285,14 @@ useEffect(() => {
               ))}
             </div>
 
-            {/* INPUT */}
+            {/* SEND AREA */}
             <div className="p-4 flex gap-2">
-              <input
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                className="flex-1 border px-3 py-2 rounded"
-                placeholder="Type message..."
-              />
               <button
                 onClick={() => {
                   sendMessage(input);
                   setInput("");
                 }}
-                className="bg-blue-600 text-white px-4 rounded"
+                className="bg-blue-600 text-white px-4 py-3 rounded w-full"
               >
                 Send
               </button>
