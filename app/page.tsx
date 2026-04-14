@@ -11,12 +11,14 @@ export default function Home() {
   // 🔥 STATE
   const [question, setQuestion] = useState("");
   const [chatOpen, setChatOpen] = useState(false);
+  const [chatStarted, setChatStarted] = useState(false);
   const [messages, setMessages] = useState<any[]>([]);
   const [input, setInput] = useState("");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
-  const [category, setCategory] = useState("General");
+  const [issueCategory, setIssueCategory] = useState("General");
+  const [issueDescription, setIssueDescription] = useState("");
 
   // 🔥 SEND MESSAGE
   const sendMessage = async (msg: string) => {
@@ -32,12 +34,13 @@ export default function Home() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            question: msg,
+            question: issueDescription || msg,
             customer_id: "123e4567-e89b-12d3-a456-426614174000",
             name: name || "User",
             email: email || "user@example.com",
             phone: phone || "1234567890",
-            issue_category: category,
+            issue_category: issueCategory,
+            issue_description: issueDescription || msg,
           }),
         }
       );
@@ -65,9 +68,20 @@ export default function Home() {
   const handleChat = () => {
     if (!question.trim()) return;
 
-    setInput(question);
+    setIssueDescription(question);
     setChatOpen(true);
     setQuestion("");
+  };
+
+  // 🔥 START CHAT (FORM SUBMIT)
+  const startChat = () => {
+    if (!name || !email || !phone || !issueDescription) {
+      alert("Please fill all required fields: Name, Email, Phone, and Issue Description");
+      return;
+    }
+
+    setChatStarted(true);
+    sendMessage(issueDescription);
   };
 
   return (
@@ -218,85 +232,126 @@ export default function Home() {
 
       {/* CHAT MODAL */}
       {chatOpen && (
-        <div className="fixed inset-0 bg-black/50 flex items-end md:items-center justify-center z-50">
-          <div className="bg-white w-full md:w-[500px] h-[80vh] rounded-t-2xl md:rounded-2xl flex flex-col">
+        <div className="fixed inset-0 bg-black/50 z-50 md:inset-auto md:bottom-0 md:right-0 md:w-[500px] md:h-[80vh] md:bg-transparent">
+          <div className="bg-white w-full h-[80vh] md:w-[500px] md:h-[80vh] rounded-t-2xl md:rounded-t-2xl flex flex-col">
 
             {/* HEADER */}
             <div className="bg-blue-600 text-white p-4 flex justify-between">
               <span>Live Chat</span>
-              <button onClick={() => setChatOpen(false)}>✖</button>
+              <button onClick={() => { setChatOpen(false); setChatStarted(false); }}>✖</button>
             </div>
 
-            {/* USER INFO FIELDS */}
-            <div className="bg-white p-4 border-b space-y-4">
-              <div className="grid gap-3 md:grid-cols-2">
-                <input
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="w-full border px-3 py-2 rounded"
-                  placeholder="Your name"
-                />
-                <input
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full border px-3 py-2 rounded"
-                  placeholder="Your email"
-                  type="email"
-                />
-                <input
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  className="w-full border px-3 py-2 rounded"
-                  placeholder="Phone number"
-                />
-                <select
-                  value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                  className="w-full border px-3 py-2 rounded"
-                >
-                  <option value="General">General</option>
-                  <option value="Computer Tech">Computer Tech</option>
-                  <option value="Automobile">Automobile</option>
-                  <option value="Home Appliances">Home Appliances</option>
-                </select>
-              </div>
+            {!chatStarted ? (
+              <>
+                {/* USER INFO FIELDS */}
+                <div className="bg-white p-4 border-b space-y-4">
+                  <div className="grid gap-3 md:grid-cols-2">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Name *</label>
+                      <input
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        className="w-full border px-3 py-2 rounded"
+                        placeholder="Enter your name"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+                      <input
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        className="w-full border px-3 py-2 rounded"
+                        placeholder="Enter your email"
+                        type="email"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Phone *</label>
+                      <input
+                        value={phone}
+                        onChange={(e) => setPhone(e.target.value)}
+                        className="w-full border px-3 py-2 rounded"
+                        placeholder="Enter your phone number"
+                        required
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Issue Category</label>
+                      <select
+                        value={issueCategory}
+                        onChange={(e) => setIssueCategory(e.target.value)}
+                        className="w-full border px-3 py-2 rounded"
+                      >
+                        <option value="General">General</option>
+                        <option value="Computer Tech">Computer Tech</option>
+                        <option value="Automobile">Automobile</option>
+                        <option value="Home Appliances">Home Appliances</option>
+                      </select>
+                    </div>
+                  </div>
 
-              <textarea
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                placeholder="Describe your problem here..."
-                className="w-full border px-3 py-2 rounded min-h-[110px] resize-none"
-              />
-            </div>
-
-            {/* MESSAGES */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-100">
-              {messages.map((msg, i) => (
-                <div
-                  key={i}
-                  className={`p-3 rounded-lg max-w-xs ${
-                    msg.role === "user"
-                      ? "bg-blue-500 text-white ml-auto"
-                      : "bg-white"
-                  }`}
-                >
-                  {msg.text}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Issue Description *</label>
+                    <textarea
+                      value={issueDescription}
+                      onChange={(e) => setIssueDescription(e.target.value)}
+                      placeholder="Describe your issue in detail"
+                      className="w-full border px-3 py-2 rounded min-h-[110px] resize-none"
+                      required
+                    />
+                  </div>
                 </div>
-              ))}
-            </div>
 
-            {/* SEND AREA */}
-            <div className="p-4 flex gap-2">
-              <button
-                onClick={() => {
-                  sendMessage(input);
-                  setInput("");
-                }}
-                className="bg-blue-600 text-white px-4 py-3 rounded w-full"
-              >
-                Send
-              </button>
-            </div>
+                {/* START CHAT BUTTON */}
+                <div className="p-4">
+                  <button
+                    onClick={startChat}
+                    className="w-full bg-blue-600 text-white px-4 py-3 rounded"
+                  >
+                    Start Chat
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                {/* MESSAGES */}
+                <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-100">
+                  {messages.map((msg, i) => (
+                    <div
+                      key={i}
+                      className={`p-3 rounded-lg max-w-xs ${
+                        msg.role === "user"
+                          ? "bg-blue-500 text-white ml-auto"
+                          : "bg-white"
+                      }`}
+                    >
+                      {msg.text}
+                    </div>
+                  ))}
+                </div>
+
+                {/* SEND AREA */}
+                <div className="p-4 flex gap-2">
+                  <input
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    className="flex-1 border px-3 py-2 rounded"
+                    placeholder="Type message..."
+                  />
+                  <button
+                    onClick={() => {
+                      sendMessage(input);
+                      setInput("");
+                    }}
+                    className="bg-blue-600 text-white px-4 py-3 rounded"
+                  >
+                    Send
+                  </button>
+                </div>
+              </>
+            )}
 
           </div>
         </div>
