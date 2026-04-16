@@ -132,60 +132,65 @@ export default function Home() {
 
       {/* CHAT MODAL */}
       {chatOpen && (
-        <div className="fixed inset-0 bg-black/50 z-50 md:inset-auto md:bottom-0 md:right-0 md:w-[500px] md:h-[80vh] md:bg-transparent">
+        <div className="fixed inset-0 bg-black/50 z-50 md:inset-auto md:bottom-4 md:right-4 md:w-[500px] md:h-[80vh] md:bg-transparent">
 
-          <div className="bg-white w-[400px] h-[80vh] rounded-xl flex flex-col md:w-[500px]">
+          <div className="bg-gradient-to-br from-white/95 to-white/90 backdrop-blur-xl w-[400px] h-[80vh] rounded-xl flex flex-col md:w-[500px] shadow-2xl border border-white/20 md:overflow-hidden">
 
-            {/* HEADER */}
-            <div className="bg-blue-600 text-white p-4 flex justify-between">
-              <span>Live Chat</span>
-              <button onClick={() => { setChatOpen(false); setChatStarted(false); }}>✖</button>
+            {/* MAC WINDOW TITLE BAR */}
+            <div className="bg-gradient-to-b from-gray-100/50 to-gray-50/30 backdrop-blur px-4 py-3 flex items-center justify-between border-b border-gray-200/30 rounded-t-xl">
+              <div className="flex gap-2">
+                <button className="w-3 h-3 rounded-full bg-red-500 hover:bg-red-600 transition" onClick={() => { setChatOpen(false); setChatStarted(false); }} />
+                <button className="w-3 h-3 rounded-full bg-yellow-500 hover:bg-yellow-600 transition" disabled />
+                <button className="w-3 h-3 rounded-full bg-green-500 hover:bg-green-600 transition" disabled />
+              </div>
+              <span className="text-sm font-semibold text-gray-700">Live Chat</span>
+              <div className="w-12" />
             </div>
 
             {/* FORM */}
             {!chatStarted ? (
-              <div className="p-4 space-y-3">
+              <div className="p-4 space-y-3 overflow-y-auto flex-1 bg-gradient-to-b from-white/50 to-transparent">
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Name *</label>
+                  <label className="block text-xs font-semibold text-gray-600 mb-2 uppercase tracking-wide">Name *</label>
                   <input
                     placeholder="Enter your name"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="w-full border p-2 rounded"
+                    className="w-full bg-white/60 backdrop-blur border border-gray-200/50 p-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+                  <label className="block text-xs font-semibold text-gray-600 mb-2 uppercase tracking-wide">Email *</label>
                   <input
                     placeholder="Enter your email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full border p-2 rounded"
+                    className="w-full bg-white/60 backdrop-blur border border-gray-200/50 p-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition"
                     type="email"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Phone *</label>
+                  <label className="block text-xs font-semibold text-gray-600 mb-2 uppercase tracking-wide">Phone *</label>
                   <input
                     placeholder="Enter your phone number"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
-                    className="w-full border p-2 rounded"
+                    className="w-full bg-white/60 backdrop-blur border border-gray-200/50 p-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Issue Category</label>
+                  <label className="block text-xs font-semibold text-gray-600 mb-2 uppercase tracking-wide">Issue Category</label>
                   <select
                     value={issueCategory}
                     onChange={(e) => setIssueCategory(e.target.value)}
-                    className="w-full border p-2 rounded"
+                    className="w-full bg-white/60 backdrop-blur border border-gray-200/50 p-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition"
                   >
                     <option value="">Select issue category</option>
                     <option value="Computer Tech">Computer Tech</option>
@@ -195,19 +200,19 @@ export default function Home() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Issue Description *</label>
+                  <label className="block text-xs font-semibold text-gray-600 mb-2 uppercase tracking-wide">Issue Description *</label>
                   <textarea
                     placeholder="Describe your issue in detail"
                     value={issueDescription}
                     onChange={(e) => setIssueDescription(e.target.value)}
-                    className="w-full border p-2 rounded min-h-[120px]"
+                    className="w-full bg-white/60 backdrop-blur border border-gray-200/50 p-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition resize-none"
                     required
                   />
                 </div>
 
                 <button
                   onClick={startChat}
-                  className="w-full bg-blue-600 text-white py-2 rounded"
+                  className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white py-2 rounded-lg font-semibold text-sm transition shadow-lg hover:shadow-xl"
                 >
                   Start Chat
                 </button>
@@ -216,14 +221,14 @@ export default function Home() {
             ) : (
               <>
                 {/* MESSAGES */}
-                <div className="flex-1 overflow-y-auto p-3 space-y-2 bg-gray-100">
+                <div className="flex-1 overflow-y-auto p-3 space-y-2 bg-gradient-to-b from-white/30 to-white/10">
                   {messages.map((msg, i) => (
                     <div
                       key={i}
                       className={`p-2 rounded max-w-xs ${
                         msg.role === "user"
-                          ? "bg-blue-500 text-white ml-auto"
-                          : "bg-white"
+                          ? "bg-gradient-to-r from-blue-500 to-blue-600 text-white ml-auto shadow-md"
+                          : "bg-white/60 backdrop-blur border border-gray-200/30 shadow-sm"
                       }`}
                     >
                       {msg.text}
@@ -232,11 +237,11 @@ export default function Home() {
                 </div>
 
                 {/* INPUT */}
-                <div className="p-3 flex gap-2">
+                <div className="p-3 flex gap-2 bg-gradient-to-t from-white/30 to-transparent border-t border-gray-200/20">
                   <input
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
-                    className="flex-1 border p-2 rounded"
+                    className="flex-1 bg-white/60 backdrop-blur border border-gray-200/50 p-2 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition"
                     placeholder="Type message..."
                   />
                   <button
@@ -244,7 +249,7 @@ export default function Home() {
                       sendMessage(input);
                       setInput("");
                     }}
-                    className="bg-blue-600 text-white px-4 rounded"
+                    className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-4 rounded-lg font-semibold text-sm transition shadow-md hover:shadow-lg"
                   >
                     Send
                   </button>
